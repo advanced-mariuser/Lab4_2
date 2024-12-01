@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Основные цвета -->
+    <color name="background_color">#2C3E50</color> <!-- Тёмно-синий -->
+    <color name="white">#FFFFFF</color> <!-- Белый -->
+    <color name="black">#000000</color> <!-- Черный -->
+
+    <!-- Цвета для прозрачности построек -->
+    <color name="transparent_item_color">#80FFFFFF</color> <!-- Белый с прозрачностью -->
+    <color name="disabled_item_text_color">#A6FFFFFF</color> <!-- Светло-белый текст -->
+
+    <!-- Цвет кнопок -->
+    <color name="button_color">#E67E22</color> <!-- Оранжевый -->
+    <color name="button_pressed_color">#D35400</color> <!-- Тёмно-оранжевый -->
+</resources>
