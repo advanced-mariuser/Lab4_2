@@ -10,7 +10,8 @@ import com.example.lab4_2.R
 import com.example.lab4_2.databinding.ItemBuildingBinding
 
 class BuildingsAdapter(
-    private val onBuildingClick: (Building) -> Unit
+    private val onBuildingClick: (Building) -> Unit,
+    private val onSellClick: (Building) -> Unit
 ) : RecyclerView.Adapter<BuildingsAdapter.BuildingViewHolder>()
 {
     //Список зданий
@@ -44,14 +45,17 @@ class BuildingsAdapter(
     {
 
         fun bind(building: Building) {
+            val currentIncome = calculateIncome(building.income, building.count + 1)
             val currentPrice = calculatePrice(building.basePrice, building.count) // Рассчитываем текущую цену
             binding.name.text = building.name
             binding.count.text = building.count.toString()
-            binding.cost.text = "$currentPrice 🍪" // Отображаем текущую цену
+            binding.cost.text = "$currentPrice 🍪"
+            binding.income.text = "+$currentIncome 🍪/сек"
             binding.icon.setImageResource(getIconForBuildingType(building.type))
             binding.root.alpha = if (building.isAvailable) 1.0f else 0.5f
             binding.root.isClickable = building.isAvailable
             binding.root.setOnClickListener { onBuildingClick(building) }
+            binding.sellButton.setOnClickListener { onSellClick(building) }
         }
     }
 
@@ -73,6 +77,10 @@ class BuildingsAdapter(
 
     private fun calculatePrice(basePrice: Int, count: Int): Int {
         return (basePrice * Math.pow(1.15, count.toDouble())).toInt()
+    }
+
+    private fun calculateIncome(baseIncome: Double, count: Int): Double {
+        return baseIncome * (1 + 0.15 * (count - 1))
     }
 
 }

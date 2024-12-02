@@ -84,29 +84,48 @@ class GameViewModel : ViewModel()
     fun buyBuilding(building: Building)
     {
         val currentPrice = calculatePrice(building.basePrice, building.count)
-        if (_gameState.value.cookieCount >= currentPrice)
-        {
+        if (_gameState.value.cookieCount >= currentPrice) {
             val updatedBuildings = _gameState.value.buildings.map {
-                if (it.name == building.name)
-                {
-                    it.copy(count = it.count + 1)
-                }
-                else it
+                if (it.name == building.name) {
+                    it.copy(count = it.count + 1) // Увеличиваем количество зданий
+                } else it
             }
+
+            val additionalIncome = calculateIncome(building.income, building.count + 1)
             _gameState.value = _gameState.value.copy(
                 cookieCount = _gameState.value.cookieCount - currentPrice,
                 buildings = updatedBuildings,
-                cookiesPerSecond = _gameState.value.cookiesPerSecond + building.income
+                cookiesPerSecond = _gameState.value.cookiesPerSecond + additionalIncome
             )
 
             viewModelScope.launch {
                 _toastMessage.emit("Вы купили ${building.name} за $currentPrice печенек!")
             }
-        }
-        else
-        {
+        } else {
             viewModelScope.launch {
                 _toastMessage.emit("Недостаточно печенек для покупки ${building.name}.")
+            }
+        }
+    }
+
+    fun sellBuilding(building: Building) {
+        if (building.count > 0) {
+            val updatedBuildings = _gameState.value.buildings.map {
+                if (it.name == building.name) {
+                    it.copy(
+                        count = it.count - 1,
+                        basePrice = (it.basePrice / 1.15).toInt()
+                    )
+                } else it
+            }
+            _gameState.value = _gameState.value.copy(
+                cookieCount = _gameState.value.cookieCount + building.basePrice,
+                buildings = updatedBuildings,
+                cookiesPerSecond = _gameState.value.cookiesPerSecond - building.income
+            )
+
+            viewModelScope.launch {
+                _toastMessage.emit("Вы продали ${building.name} за ${building.basePrice} печенек!")
             }
         }
     }
@@ -131,5 +150,9 @@ class GameViewModel : ViewModel()
     private fun calculatePrice(basePrice: Int, count: Int): Int
     {
         return (basePrice * Math.pow(1.15, count.toDouble())).toInt()
+    }
+
+    private fun calculateIncome(baseIncome: Double, count: Int): Double {
+        return baseIncome * (1 + 0.15 * (count - 1))
     }
 }
